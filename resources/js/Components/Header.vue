@@ -543,13 +543,59 @@
                                             </a>
                                         </div>
 
-                                        <div class="flex">
-                                            <a href="#" class="-m-2 p-2 text-gray-400 hover:text-gray-500">
+                                        <div class="flex relative">
+                                            <div
+                                                id="profile-menu-button"
+                                                @click="profileMenuIsOpen = !profileMenuIsOpen"
+                                                class="-m-2 p-2 text-gray-400 hover:text-gray-500"
+                                            >
                                                 <span class="sr-only">Account</span>
                                                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                                 </svg>
-                                            </a>
+                                            </div>
+                                            <div
+                                                v-if="profileMenuIsOpen"
+                                                class="absolute right-0 z-10 mt-10 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1"
+                                            >
+                                                <router-link
+                                                    v-if="userStore.user.id"
+                                                    :to="{ name: 'account.orders' }"
+                                                    class="block py-2 px-4 text-sm text-gray-700"
+                                                    role="menuitem"
+                                                    tabindex="-1"
+                                                    id="user-menu-item-0"
+                                                >Order history</router-link>
+                                                <router-link
+                                                    v-if="userStore.user.id"
+                                                    :to="{ name: 'account.profile' }"
+                                                    class="block py-2 px-4 text-sm text-gray-700"
+                                                    role="menuitem"
+                                                    tabindex="-1" id="user-menu-item-1"
+                                                >Account settings</router-link>
+                                                <a
+                                                    v-if="userStore.user.id"
+                                                    href="#"
+                                                    @click="logout"
+                                                    class="block py-2 px-4 text-sm text-gray-700"
+                                                    role="menuitem"
+                                                    tabindex="-1" id="user-menu-item-2"
+                                                >Sign out</a>
+                                                <router-link
+                                                    v-if="!userStore.user.id"
+                                                    :to="{ name: 'auth.login' }"
+                                                    class="block py-2 px-4 text-sm text-gray-700"
+                                                    role="menuitem"
+                                                    tabindex="-1" id="user-menu-item-1"
+                                                >Sign in</router-link>
+                                                <router-link
+                                                    v-if="!userStore.user.id"
+                                                    :to="{ name: 'auth.register' }"
+                                                    class="block py-2 px-4 text-sm text-gray-700"
+                                                    role="menuitem"
+                                                    tabindex="-1" id="user-menu-item-1"
+                                                >Register</router-link>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -577,13 +623,18 @@
 <script setup>
 import {computed, ref} from 'vue'
 import {useCartStore} from "../Store/cart";
+import { useUserStore } from '../store/user'
+import router from "../Router";
+import axios from "axios";
 
-const store = useCartStore();
+const userStore = useUserStore()
+
+const cartStore = useCartStore();
 
 const quantity = computed(() => {
     let quantity = 0;
-    if (store.getCartQuantity > 0) {
-        quantity = store.getCartQuantity
+    if (cartStore.getCartQuantity > 0) {
+        quantity = cartStore.getCartQuantity
     } else {
         quantity = 0;
     }
@@ -593,5 +644,30 @@ const quantity = computed(() => {
 
 const mensMenuIsOpen = ref(false)
 const womensMenuIsOpen = ref(false)
+const profileMenuIsOpen = ref(false)
+
+const logout = async () => {
+    axios
+        .delete('/api/logout', {
+            headers: {
+                Authorization: `Bearer ${userStore.user.token}`,
+                token: userStore.user.token
+            }
+        })
+        .then(() => {
+            userStore.clearUser()
+            router.push({name: 'home'})
+        })
+        .catch(error => {
+            console.log(error)
+        })
+}
 
 </script>
+
+<style scoped>
+div[id='profile-menu-button']:hover {
+    cursor: pointer;
+}
+</style>
+

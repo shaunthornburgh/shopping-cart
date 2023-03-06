@@ -23,7 +23,10 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->validated('password'), $user->password)) {
             return response([
-                'message' => 'Invalid Credentials'
+                'message' => 'Invalid Credentials',
+                'errors' => [
+                    'general' => 'Invalid Credentials'
+                ]
             ], 401);
         }
 

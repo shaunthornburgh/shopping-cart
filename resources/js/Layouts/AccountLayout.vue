@@ -1,9 +1,11 @@
 <template>
-
+$END$
 </template>
 
-<script setup>
-
+<script>
+export default {
+name: "AccountLayout"
+}
 </script>
 
 <style scoped>

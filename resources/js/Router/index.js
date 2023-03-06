@@ -7,6 +7,10 @@ import OrderCreate from "../Pages/Order/Create.vue"
 import OrderShow from "../Pages/Order/Show.vue"
 import PackageShow from "../Pages/Package/Show.vue"
 import Login from "../Pages/Auth/Login.vue"
+import Register from "../Pages/Auth/Register.vue";
+import AccountProfile from "../Pages/account/Profile/Show.vue";
+import OrderHistory from "../Pages/account/Orders/Index.vue";
+import {useUserStore} from "../Store/user";
 
 const routes = [
     {
@@ -46,8 +50,29 @@ const routes = [
     },
     {
         path: "/auth/login",
+        beforeEnter: (to, from, next) => {
+            useUserStore().user.id ? next('/account/profile') : next()
+        },
         name: "auth.login",
         component: Login,
+    },
+    {
+        path: "/auth/register",
+        beforeEnter: (to, from, next) => {
+            useUserStore().user.id ? next('/account/profile') : next()
+        },
+        name: "auth.register",
+        component: Register,
+    },
+    {
+        path: "/account/profile",
+        name: "account.profile",
+        component: AccountProfile,
+    },
+    {
+        path: "/account/profile",
+        name: "account.orders",
+        component: OrderHistory,
     }
 ];
 
