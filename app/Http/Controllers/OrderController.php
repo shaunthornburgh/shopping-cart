@@ -5,40 +5,32 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOrderRequest;
-use App\Http\Requests\StoreProductRequest;
 use App\Http\Resources\OrderResource;
-use App\Http\Resources\ProductCollection;
-use App\Http\Resources\ProductResource;
 use App\Models\Order;
-use App\Models\Package;
-use App\Models\Product;
-use App\Models\Sku;
-use App\Models\User;
-use App\Services\PaymentService;
-use App\Services\ProcessPayment;
+use App\Repositories\OrderRepositoryInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
-    private $paymentService;
-    public function __construct(PaymentService $service)
+    private OrderRepositoryInterface $orderRepository;
+
+    /**
+     * @param OrderRepositoryInterface $orderRepository
+     */
+    public function __construct(OrderRepositoryInterface $orderRepository)
     {
-        $this->paymentService = $service;
+        $this->orderRepository = $orderRepository;
     }
 
     /**
      * Display the specified resource.
      *
      * @param Order $order
-     * @return OrderResource
      */
     public function show(Order $order): OrderResource
     {
-        return new OrderResource($order);
+        return new OrderResource($this->orderRepository->getOrderById($order->id));
     }
 
     /**
@@ -48,13 +40,7 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request): OrderResource|JsonResponse
     {
-        try {
-            $order = $this->paymentService->createOrder($request);
-
-            return new OrderResource($order);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return response()->json(['message' => $e->getMessage()], 500);
-        }
+        // TODO return to $request->validated()
+        return new OrderResource($this->orderRepository->createOrder($request->toArray()));
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,5 +25,16 @@ class Order extends Model
         return $this->belongsToMany(Sku::class)
             ->using(OrderSku::class)
             ->withPivot('quantity');
+    }
+
+    public function addSku($paymentId, $order, $sku, $quantity, $vatAmount, $status)
+    {
+        $order->skus()->attach($sku, [
+            'payment_id' => $paymentId,
+            'order_id' => $order->id,
+            'quantity' => $quantity,
+            'vat_amount' => $vatAmount,
+            'status' => $status
+        ]);
     }
 }

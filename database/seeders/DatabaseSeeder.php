@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             VatSeeder::class,
             SkuSeeder::class,
             PackageSeeder::class,
+            VatSeeder::class,
         ]);
     }
 }

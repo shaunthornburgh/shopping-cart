@@ -52,7 +52,12 @@ class Sku extends Model
     }
     public function getIsSubscriptionAttribute(): bool
     {
-        return  $this->product->category->slug == 'subscriptions';
+        return $this->product->category->id === Category::SUBSCRIPTIONS;
+    }
+
+    public function getVatAmount(int $quantity): float
+    {
+        return $this->vat ? round(($this->price * $quantity * $this->vat->rate / 100), 2) : 0;
     }
 
     public function vat(): BelongsTo

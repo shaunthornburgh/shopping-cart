@@ -10,6 +10,12 @@ class Vat extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'rate',
+        'stripe_tax_rate_id'
+    ];
+
     public const RATE_20 = 1;
 
     public function skus(): HasMany

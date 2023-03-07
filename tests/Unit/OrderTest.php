@@ -41,17 +41,21 @@ class OrderTest extends TestCase
         $order = Order::factory()->create();
         $sku = Sku::factory()->create();
 
-        $order->skus()->attach($sku, [
-            'quantity' => $quantity = $this->faker->numberBetween(1, 10),
-            'payment_id' => $paymentId = $this->faker->numberBetween(1, 10),
-            'status' => $status = $this->faker->word
-        ]);
+        $order->addSku(
+            $paymentId = $this->faker->numberBetween(1, 10),
+            $order,
+            $sku,
+            $quantity = $this->faker->numberBetween(10, 100),
+            $vatAmount = $this->faker->randomFloat(2, 10, 20),
+            $status = $this->faker->word
+        );
 
         $this->assertDatabaseHas('order_sku', [
             'order_id' => $order->id,
             'sku_id' => $sku->id,
             'quantity' => $quantity,
             'payment_id' => $paymentId,
+            'vat_amount' => $vatAmount,
             'status' => $status,
         ]);
     }

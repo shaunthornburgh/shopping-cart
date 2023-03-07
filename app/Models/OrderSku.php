@@ -19,7 +19,8 @@ class OrderSku extends Pivot
         'order_id',
         'payment_id',
         'status',
-        'quantity'
+        'quantity',
+        'vat_amount'
     ];
 
     public function sku(): BelongsTo

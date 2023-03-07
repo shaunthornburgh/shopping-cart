@@ -639,7 +639,6 @@ const quantity = computed(() => {
         quantity = 0;
     }
     return quantity;
-
 });
 
 const mensMenuIsOpen = ref(false)

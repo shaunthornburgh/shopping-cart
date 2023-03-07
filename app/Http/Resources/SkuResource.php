@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -25,10 +27,10 @@ class SkuResource extends JsonResource
             'value' => $this->whenPivotLoaded('attribute_sku', function () {
                 return $this->pivot->value;
             }),
-            'packages' => $this->packageSkus,
+            'packages' => $this->packages,
             'vat' => $this->vat,
             'quantity' => $this->whenPivotLoaded('package_sku', function () {
-               return $this->pivot->quantity;
+                return $this->pivot->quantity;
             }),
         ];
     }

@@ -21,7 +21,7 @@ class ProductTest extends TestCase
     {
         $this->assertTrue(
             Schema::hasColumns('products', [
-                'id', 'name'
+                'id', 'name', 'stripe_product_id'
             ])
         );
     }

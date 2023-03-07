@@ -38,7 +38,7 @@
                                         name="first-name"
                                         autocomplete="given-name"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        v-model="formData.firstName"
+                                        v-model="formData.first_name"
                                     >
                                 </div>
                             </div>
@@ -52,7 +52,7 @@
                                         name="last-name"
                                         autocomplete="family-name"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        v-model="formData.lastName"
+                                        v-model="formData.last_name"
                                     >
                                 </div>
                             </div>
@@ -152,7 +152,7 @@
                                         id="postal-code"
                                         autocomplete="postal-code"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        v-model="formData.zipcode"
+                                        v-model="formData.zip_code"
                                     >
                                 </div>
                             </div>
@@ -430,11 +430,11 @@ const localState = reactive({
 });
 
 const formData = reactive({
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     apartment: "",
     address: "",
-    zipcode: "",
+    zip_code: "",
     city: "",
     state: "",
     email: "",
@@ -460,10 +460,10 @@ const processPayment = async () => {
     localState.paymentProcessing = true;
 
     const {
-        firstName,
-        lastName,
+        first_name,
+        last_name,
         address,
-        zipcode,
+        zip_code,
         city,
         state,
         email,
@@ -474,13 +474,13 @@ const processPayment = async () => {
         localState.cardElement,
         {
             billing_details: {
-                name: `${firstName} ${lastName}`,
+                name: `${first_name} ${last_name}`,
                 email: email,
                 address: {
                     line1: address,
                     city: city,
                     state: state,
-                    postal_code: zipcode,
+                    postal_code: zip_code,
                 },
             },
         }

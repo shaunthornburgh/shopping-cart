@@ -47,4 +47,36 @@ class AttributeTest extends TestCase
             'value' => $value
         ]);
     }
+
+    /** @test  */
+    public function attributes_with_a_size_are_size()
+    {
+        $sizeAttribute = Attribute::factory()->create([
+            'name' => Attribute::SIZE
+        ]);
+        $nonSizeAttribute = Attribute::factory()->create([
+            'name' => Attribute::COLOUR
+        ]);
+
+        $sizeAttributes = Attribute::size()->get();
+
+        $this->assertTrue($sizeAttributes->contains($sizeAttribute));
+        $this->assertFalse($sizeAttributes->contains($nonSizeAttribute));
+    }
+
+    /** @test  */
+    public function attributes_with_a_colour_are_colour()
+    {
+        $colourAttribute = Attribute::factory()->create([
+            'name' => Attribute::COLOUR
+        ]);
+        $nonColourAttribute = Attribute::factory()->create([
+            'name' => Attribute::SIZE
+        ]);
+
+        $colourAttributes = Attribute::colour()->get();
+
+        $this->assertTrue($colourAttributes->contains($colourAttribute));
+        $this->assertFalse($colourAttributes->contains($nonColourAttribute));
+    }
 }

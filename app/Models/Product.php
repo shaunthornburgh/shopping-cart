@@ -24,7 +24,8 @@ class Product extends Model
     protected $fillable = [
         'category_id',
         'name',
-        'description'
+        'description',
+        'stripe_product_id'
     ];
 
     public function skus(): HasMany
