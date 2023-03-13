@@ -11,7 +11,6 @@ use App\Models\Order;
 use App\Models\Package;
 use App\Models\ShippingMethod;
 use App\Models\Sku;
-use Illuminate\Database\Eloquent\Collection;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -25,9 +24,9 @@ class OrderRepository implements OrderRepositoryInterface
     /**
      * @param $orderId
      */
-    public function getOrderById($orderId): Sku
+    public function getOrderById($orderId): Order
     {
-        return Sku::find($orderId);
+        return Order::find($orderId);
     }
 
     /**

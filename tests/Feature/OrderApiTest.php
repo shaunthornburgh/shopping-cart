@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Billing\PaymentGatewayInterface;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ShippingMethod;
 use App\Models\Sku;
@@ -19,6 +19,20 @@ class OrderApiTest extends TestCase
 {
     use WithFaker;
     use RefreshDatabase;
+
+    /** @test */
+    public function a_user_can_view_an_order(): void
+    {
+        $order = Order::factory()->create();
+
+        $this->get("/api/order/{$order->id}")
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => $order->id
+                ]
+            ]);
+    }
 
     /** @test */
     public function a_user_can_purchase_a_subscription(): void

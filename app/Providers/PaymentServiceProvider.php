@@ -13,20 +13,9 @@ class PaymentServiceProvider extends ServiceProvider
     /**
      * Register services.
      *
-     * @return void
      */
     public function register(): void
     {
         $this->app->bind(PaymentGatewayInterface::class, StripePaymentGateway::class);
-    }
-
-    /**
-     * Bootstrap services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        //
     }
 }
