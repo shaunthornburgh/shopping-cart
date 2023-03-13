@@ -23,6 +23,8 @@ class StoreSkuRequest extends FormRequest
     {
         return [
             'sku' => 'required|string',
+            'name' => 'required|string',
+            'price' => 'required|decimal:2',
             'product_id' => 'required|exists:products,id',
             'vat_id' => 'sometimes|exists:vats,id'
         ];

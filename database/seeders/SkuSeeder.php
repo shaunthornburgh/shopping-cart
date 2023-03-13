@@ -48,7 +48,9 @@ class SkuSeeder extends Seeder
             $sku = Sku::factory()->create([
                 'product_id' => $skuName['product_id'],
                 'name' => $skuName['name'],
-                'vat_id' => Vat::where('rate', 20)->first()->id
+                'vat_id' => Vat::RATE_20,
+                'stripe_price_id' => 'price_0MkwWl9GwWIyQ6JWYxHCXBCY',
+                'price' => 20
             ]);
 
             Attribute::where('product_id', $skuName['product_id'])
@@ -68,24 +70,31 @@ class SkuSeeder extends Seeder
             'product_id' => Product::where('id', Product::T_SHIRTS_MONTHLY_SUBSCRIPTION)->first()->id,
             'name' => 'T-Shirts monthly plan',
             'vat_id' => Vat::RATE_20,
+            'stripe_price_id' => 'price_0MeGNY9GwWIyQ6JWCiruqTsF',
+            'price' => 10
         ]);
 
         Sku::factory()->create([
             'product_id' => Product::where('id', Product::JUMPERS_MONTHLY_SUBSCRIPTION)->first()->id,
             'name' => 'Jumpers monthly plan',
             'vat_id' => Vat::RATE_20,
+            'stripe_price_id' => 'price_0MeGNY9GwWIyQ6JWCiruqTsF'
         ]);
 
         Sku::factory()->create([
             'product_id' => Product::where('id', Product::TROUSERS_MONTHLY_SUBSCRIPTION)->first()->id,
             'name' => 'Trousers monthly plan',
             'vat_id' => Vat::RATE_20,
+            'stripe_price_id' => 'price_0MeGNY9GwWIyQ6JWCiruqTsF',
+            'price' => 10
         ]);
 
         Sku::factory()->create([
             'product_id' => Product::where('id', Product::ONBOARDING_FEE)->first()->id,
             'name' => 'Onboarding fee',
             'vat_id' => Vat::RATE_20,
+            'stripe_price_id' => 'price_0Mjn9U9GwWIyQ6JWzrg2ES2T',
+            'price' => 20
         ]);
     }
 }

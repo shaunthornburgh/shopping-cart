@@ -11,6 +11,8 @@ class StripePaymentGateway implements PaymentGatewayInterface
 {
     public function getUser(array $attributes): User
     {
+        // TODO - move to user repository
+
         $user = User::firstOrCreate(
             [
                 'email' => $attributes['email']
@@ -20,8 +22,8 @@ class StripePaymentGateway implements PaymentGatewayInterface
                 'name' => $attributes['first_name'] . ' ' . $attributes['last_name'],
                 'address' => $attributes['address'],
                 'city' => $attributes['city'],
-                'state' => $attributes['state'],
-                'zip_code' => $attributes['zip_code']
+                'county' => $attributes['county'],
+                'postcode' => $attributes['postcode']
             ]
         );
 
@@ -38,27 +40,60 @@ class StripePaymentGateway implements PaymentGatewayInterface
         return $user;
     }
 
-    public function subscribe($user, $sku, $quantity, $paymentMethodId): string
+    public function subscribe(User $user, Cart $cart): string
     {
-        $subscription = $user->newSubscription($sku->name, $sku->stripe_price_id)
-            ->quantity($quantity)
-            ->create($paymentMethodId, [
-                'email' => $user->email
-            ], [
-                'payment_behavior' => 'error_if_incomplete',
-                'default_tax_rates' => $sku->stripe_tax_rate_id,
+        $subscription = $user->newSubscription(
+            'Subscription',
+            $cart->getSubscriptionItems()->map(function (CartItem $cartItem) {
+                return $cartItem->getSku()->stripe_price_id;
+            })->toArray()
+        );
 
-            ]);
+        foreach ($cart->getSubscriptionItems() as $cartItem) {
+            $subscription->quantity($cartItem->getQuantity(), $cartItem->getSku()->stripe_price_id);
+        }
+
+        $nonSubscriptionItems = [];
+        foreach ($cart->getNonSubscriptionItems() as $cartItem) {
+            $nonSubscriptionItems[] = [
+                'price' => $cartItem->getSku()->stripe_price_id,
+                'quantity' => $cartItem->getQuantity()
+            ];
+        }
+
+        if ($cart->getShippingMethod()) {
+            $nonSubscriptionItems[] = [
+                'price' => $cart->getShippingMethod()->stripe_price_id,
+                'quantity' => 1
+            ];
+        }
+
+        $subscription = $subscription->create($cart->getPaymentMethodId(), [
+                'name' => $user->name,
+                'email' => $user->email
+            ],
+            [
+                'add_invoice_items' => $nonSubscriptionItems,
+                'payment_behavior' => 'error_if_incomplete',
+            ]
+        );
+
         return $subscription->latestPayment()->id;
     }
 
-    public function charge($user, $paymentMethodId, $amount): string
+    public function charge(User $user, Cart $cart): string
     {
-        $payment = $user->charge(
-            $amount,
-            $paymentMethodId,
-            ['setup_future_usage' => 'off_session']
-        );
-        return $payment->id;
+        $user->updateDefaultPaymentMethod($cart->getPaymentMethodId());
+        $user->charge(($cart->getTotal()) * 100, $cart->getPaymentMethodId());
+
+        foreach ($cart->getNonSubscriptionItems() as $cartItem) {
+            $user->tabPrice($cartItem->getSku()->stripe_price_id, $cartItem->getQuantity());
+        }
+
+        if ($cart->getShippingMethod()) {
+            $user->tabPrice($cart->getShippingMethod()->stripe_price_id, 1);
+        }
+
+        return $user->invoice()->payment_intent;
     }
 }

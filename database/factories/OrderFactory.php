@@ -21,7 +21,8 @@ class OrderFactory extends Factory
             'user_id' => $this->faker->numberBetween(1, 10),
             'last_four' => '1234',
             'card_type' => 'Visa',
-            'total' => $this->faker->numberBetween(50000, 200000),
+            'sub_total' => $subTotal = $this->faker->numberBetween(50000, 200000),
+            'vat_amount' => $subTotal * 20/100
         ];
     }
 }

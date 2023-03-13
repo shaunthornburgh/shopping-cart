@@ -31,7 +31,6 @@ export const useCartStore = defineStore({
         },
 
         addToCart(item, type = "products") {
-
             const itemIndex = this.cart[type].findIndex(
                 (cartItem) => item.id === cartItem.id
             );
@@ -42,7 +41,6 @@ export const useCartStore = defineStore({
                 item.quantity = 1;
                 this.cart[type].push(item);
             }
-
         },
         removeProductFromCart(item, type = "products") {
             this.cart[type].splice(this.cart[type].indexOf(item), 1);
@@ -61,7 +59,7 @@ export const useCartStore = defineStore({
         },
         updateCartItemQuantity(item, type = "products", quantity) {
             const itemIndex = this.cart[type].findIndex(
-                (cartItem) => item.slug === cartItem.slug
+                (cartItem) => item.sku === cartItem.sku
             );
 
             if (itemIndex > -1) {
@@ -95,13 +93,23 @@ export const useCartStore = defineStore({
             return this.customer;
         },
         getCartTotal() {
-            return this.cart.products.reduce(
+            return (this.cart.products.reduce(
                 (total, item) => total + item.price * item.quantity,
                 0
             ) + this.cart.packages.reduce(
                 (total, item) => total + item.price * item.quantity,
                 0
-            );
+            )).toFixed(2);
+        },
+        getCartNonSubscriptionItems() {
+            return this.cart.products.filter(function (el) {
+                return el.is_subscription === false
+            });
+        },
+        getCartSubscriptionItems() {
+            return this.cart.products.filter(function (el) {
+                return el.is_subscription === true
+            });
         },
         getVatTotal() {
             return +(this.cart.products.reduce(

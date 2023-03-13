@@ -34,7 +34,8 @@ class Order extends Model
             'order_id' => $order->id,
             'quantity' => $quantity,
             'vat_amount' => $vatAmount,
-            'status' => $status
+            'status' => $status,
+            'sub_total' => $sku->price * $quantity
         ]);
     }
 }

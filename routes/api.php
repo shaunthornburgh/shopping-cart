@@ -8,6 +8,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\ShippingMethodController;
 use App\Http\Controllers\SkuController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
@@ -28,11 +29,11 @@ Route::apiResource('package', PackageController::class)->only(['index', 'show'])
 Route::apiResource('product', ProductController::class)->only(['index', 'show']);
 Route::apiResource('register', RegistrationController::class)->only(['store']);
 Route::apiResource('sku', SkuController::class)->only(['index', 'show']);
+Route::apiResource('shipping-method', ShippingMethodController::class)->only(['index', 'show']);
 
 // Protected
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::delete('logout', [AuthController::class, 'destroy']);
     Route::apiResource('product', SkuController::class)->only(['store', 'update', 'destroy']);
     Route::apiResource('sku', SkuController::class)->only(['store', 'update', 'destroy']);
-
 });

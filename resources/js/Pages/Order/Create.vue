@@ -22,6 +22,10 @@
                                     v-model="formData.email"
                                 >
                             </div>
+                            <div
+                                class="font-medium text-red-500 text-xs mt-1"
+                                v-if="localState.errors.email"
+                            >{{ localState.errors.email[0] }}</div>
                         </div>
                     </div>
 
@@ -41,6 +45,10 @@
                                         v-model="formData.first_name"
                                     >
                                 </div>
+                                <div
+                                    class="font-medium text-red-500 text-xs mt-1"
+                                    v-if="localState.errors.first_name"
+                                >{{ localState.errors.first_name[0] }}</div>
                             </div>
 
                             <div>
@@ -55,6 +63,10 @@
                                         v-model="formData.last_name"
                                     >
                                 </div>
+                                <div
+                                    class="font-medium text-red-500 text-xs mt-1"
+                                    v-if="localState.errors.last_name"
+                                >{{ localState.errors.last_name[0] }}</div>
                             </div>
 
                             <div class="sm:col-span-2">
@@ -82,6 +94,10 @@
                                         v-model="formData.address"
                                     >
                                 </div>
+                                <div
+                                    class="font-medium text-red-500 text-xs mt-1"
+                                    v-if="localState.errors.address"
+                                >{{ localState.errors.address[0] }}</div>
                             </div>
 
                             <div class="sm:col-span-2">
@@ -109,6 +125,10 @@
                                         v-model="formData.city"
                                     >
                                 </div>
+                                <div
+                                    class="font-medium text-red-500 text-xs mt-1"
+                                    v-if="localState.errors.city"
+                                >{{ localState.errors.city[0] }}</div>
                             </div>
 
                             <div>
@@ -130,7 +150,7 @@
                             </div>
 
                             <div>
-                                <label for="region" class="block text-sm font-medium text-gray-700">State / Province</label>
+                                <label for="region" class="block text-sm font-medium text-gray-700">County</label>
                                 <div class="mt-1">
                                     <input
                                         type="text"
@@ -138,9 +158,13 @@
                                         id="region"
                                         autocomplete="address-level1"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        v-model="formData.state"
+                                        v-model="formData.county"
                                     >
                                 </div>
+                                <div
+                                    class="font-medium text-red-500 text-xs mt-1"
+                                    v-if="localcounty.errors.county"
+                                >{{ localState.errors.county[0] }}</div>
                             </div>
 
                             <div>
@@ -152,9 +176,13 @@
                                         id="postal-code"
                                         autocomplete="postal-code"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        v-model="formData.zip_code"
+                                        v-model="formData.postcode"
                                     >
                                 </div>
+                                <div
+                                    class="font-medium text-red-500 text-xs mt-1"
+                                    v-if="localState.errors.postcode"
+                                >{{ localState.errors.postcode[0] }}</div>
                             </div>
 
                             <div class="sm:col-span-2">
@@ -174,38 +202,28 @@
                     </div>
 
                     <!-- Delivery -->
-                    <div class="mt-10 border-t border-gray-200 pt-10">
+                    <div v-if="!localState.loading && cartHasNonSubscriptionItems.length" class="mt-10 border-t border-gray-200 pt-10">
                         <fieldset>
                             <legend class="text-lg font-medium text-gray-900">Delivery method</legend>
 
                             <div class="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
 
-                                <label class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none border-gray-300 undefined" @click="deliveryMethod = 'Standard'">
+                                <label
+                                    v-for="shippingMethod in shippingMethodStore.shippingMethods"
+                                    class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none border-gray-300 undefined"
+                                    @click="shippingMethodStore.setShippingMethod(shippingMethod)"
+                                >
                                     <span class="flex flex-1">
                                         <span class="flex flex-col">
-                                          <span id="delivery-method-0-label" class="block text-sm font-medium text-gray-900">Standard</span>
-                                          <span id="delivery-method-0-description-0" class="mt-1 flex items-center text-sm text-gray-500">4–10 business days</span>
-                                          <span id="delivery-method-0-description-1" class="mt-6 text-sm font-medium text-gray-900">$5.00</span>
+                                          <span id="delivery-method-0-label" class="block text-sm font-medium text-gray-900">{{ shippingMethod.name }}</span>
+                                          <span id="delivery-method-0-description-0" class="mt-1 flex items-center text-sm text-gray-500">{{ shippingMethod.description }}</span>
+                                          <span id="delivery-method-0-description-1" class="mt-6 text-sm font-medium text-gray-900">£{{ shippingMethod.price }}</span>
                                         </span>
                                       </span>
-                                    <svg class="h-5 w-5 text-indigo-600" :class="{ 'hidden': !(deliveryMethod === 'Standard'), 'undefined': (deliveryMethod === 'Standard') }" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <svg class="h-5 w-5 text-indigo-600" :class="{ 'hidden': !(shippingMethodStore.shippingMethod.name === shippingMethod.name), 'undefined': (shippingMethodStore.shippingMethod.name === shippingMethod.name) }" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"></path>
                                     </svg>
-                                    <span class="pointer-events-none absolute -inset-px rounded-lg border-2" aria-hidden="true" :class="{ 'border border-indigo-500': (deliveryMethod === 'Standard'), 'border-2 border-transparent': !(deliveryMethod === 'Standard') }"></span>
-                                </label>
-
-                                <label  class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none border-gray-300 undefined" @click="deliveryMethod = 'Express'">
-                                    <span class="flex flex-1">
-                                        <span class="flex flex-col">
-                                          <span id="delivery-method-1-label" class="block text-sm font-medium text-gray-900">Express</span>
-                                          <span id="delivery-method-1-description-0" class="mt-1 flex items-center text-sm text-gray-500">2–5 business days</span>
-                                          <span id="delivery-method-1-description-1" class="mt-6 text-sm font-medium text-gray-900">$16.00</span>
-                                        </span>
-                                      </span>
-                                       <svg class="h-5 w-5 text-indigo-600" :class="{ 'hidden': (deliveryMethod === 'Standard'), 'undefined': !(deliveryMethod === 'Standard') }" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span class="pointer-events-none absolute -inset-px rounded-lg border-2" aria-hidden="true" :class="{ 'border border-indigo-500': !(deliveryMethod === 'Standard'), 'border-2 border-transparent': (deliveryMethod === 'Standard') }"></span>
+                                    <span class="pointer-events-none absolute -inset-px rounded-lg border-2" aria-hidden="true" :class="{ 'border border-indigo-500': (shippingMethodStore.shippingMethod.name === shippingMethod.name), 'border-2 border-transparent': !(shippingMethodStore.shippingMethod.name === shippingMethod.name) }"></span>
                                 </label>
 
                             </div>
@@ -257,7 +275,7 @@
 
                                         <div class="ml-4 flow-root flex-shrink-0">
                                             <button
-                                                @click="store.removeProductFromCart(cartItem, 'products')"
+                                                @click="cartStore.removeProductFromCart(cartItem, 'products')"
                                                 type="button" class="-m-2.5 flex items-center justify-center bg-white p-2.5 text-gray-400 hover:text-gray-500"
                                             >
                                                 <span class="sr-only">Remove</span>
@@ -309,7 +327,7 @@
 
                                         <div class="ml-4 flow-root flex-shrink-0">
                                             <button
-                                                @click="store.removeProductFromCart(cartItem, 'packages')"
+                                                @click="cartStore.removeProductFromCart(cartItem, 'packages')"
                                                 type="button" class="-m-2.5 flex items-center justify-center bg-white p-2.5 text-gray-400 hover:text-gray-500"
                                             >
                                                 <span class="sr-only">Remove</span>
@@ -349,7 +367,7 @@
                             </div>
                             <div class="flex items-center justify-between">
                                 <dt class="text-sm">Shipping</dt>
-                                <dd class="text-sm font-medium text-gray-900">${{ shipping_estimate }}</dd>
+                                <dd class="text-sm font-medium text-gray-900">${{ shippingEstimate }}</dd>
                             </div>
                             <div class="flex items-center justify-between">
                                 <dt class="text-sm">Taxes</dt>
@@ -379,54 +397,69 @@
 
 <script setup>
 import { loadStripe } from '@stripe/stripe-js';
-import {reactive, onMounted, computed, ref} from "vue";
+import { reactive, onMounted, computed } from "vue";
 import { useCartStore } from "../../Store/cart";
 import axios from "axios";
 import router from "../../Router/index";
+import {useShippingMethodStore} from "../../Store/shippingMethod";
 
-const store = useCartStore();
-const deliveryMethod = ref("Standard");
-const deliveryMethods = {
-    Standard: 5.00,
-    Express: 16.00,
-}
-
+const cartStore = useCartStore();
+const shippingMethodStore = useShippingMethodStore();
 
 const cart = computed(() => {
-    return store.getCartContents;
+    return cartStore.getCartContents;
 });
 
 const subTotal = computed(() => {
-    return store.getCartTotal;
-
+    return cartStore.getCartTotal;
 });
+
 const vatTotal = computed(() => {
-    return store.getVatTotal;
-
+    const amount = Number(cartStore.getVatTotal) + Number(shippingMethodStore.getVatTotal);
+    return amount.toFixed(2);
 });
 
-const shipping_estimate = computed(() => {
-    return  (deliveryMethods[deliveryMethod.value]).toFixed(2);
+const cartHasNonSubscriptionItems = computed(() => {
+    return cartStore.getCartNonSubscriptionItems;
+});
+
+const cartHasSubscriptionItems = computed(() => {
+    return cartStore.getCartSubscriptionItems;
+});
+
+const shippingMethod = computed(() => {
+    return shippingMethodStore.getShippingMethod;
+});
+
+const shippingEstimate = computed(() => {
+    let estimate = 0;
+
+    if (cartHasNonSubscriptionItems.value.length) {
+        return Number(shippingMethod.value.price).toFixed(2);
+    }
+
+    return estimate;
 });
 
 const orderTotal = computed(() => {
-    return (Number(subTotal.value) + Number(vatTotal.value) + Number(shipping_estimate.value)).toFixed(2);
+    return (Number(subTotal.value) + Number(vatTotal.value) + Number(shippingEstimate.value)).toFixed(2);
 });
-
 
 const cartItemOptions = [1, 2, 3, 4, 5, 6, 7, 8];
 
 function updateCartItemQuantity(cartItem, type, event) {
-    store.updateCartItemQuantity(cartItem, type, event.target.value);
+    cartStore.updateCartItemQuantity(cartItem, type, event.target.value);
 }
 
 const localState = reactive({
+    loading: false,
     removingCartItem: false,
     paymentProcessing: false,
     stripe: {},
     cardElement: {},
     customer: {},
     orderError: null,
+    errors: []
 });
 
 const formData = reactive({
@@ -434,15 +467,15 @@ const formData = reactive({
     last_name: "",
     apartment: "",
     address: "",
-    zip_code: "",
+    postcode: "",
     city: "",
-    state: "",
+    county: "",
     email: "",
     phone: ""
 });
 
 onMounted(async () => {
-
+    localState.loading = true;
     localState.stripe = await loadStripe(import.meta.env.VITE_STRIPE_KEY);
     const stripeElements = localState.stripe.elements();
     localState.cardElement = stripeElements.create("card", {
@@ -452,22 +485,23 @@ onMounted(async () => {
         },
     });
     localState.cardElement.mount("#card-element");
+    localState.loading = false;
 });
 
 const processPayment = async () => {
-
-    store.updateCustomer(formData);
+    localState.errors = [];
+    cartStore.updateCustomer(formData);
     localState.paymentProcessing = true;
 
     const {
         first_name,
         last_name,
         address,
-        zip_code,
+        postcode,
         city,
-        state,
+        county,
         email,
-    } = store.getCustomer;
+    } = cartStore.getCustomer;
 
     const { paymentMethod, error } = await localState.stripe.createPaymentMethod(
         "card",
@@ -479,8 +513,8 @@ const processPayment = async () => {
                 address: {
                     line1: address,
                     city: city,
-                    state: state,
-                    postal_code: zip_code,
+                    county: county,
+                    post_code: postcode,
                 },
             },
         }
@@ -489,17 +523,16 @@ const processPayment = async () => {
     if (error || !paymentMethod.id) {
         localState.paymentProcessing = false;
         localState.orderError = error;
-        console.log(error)
         alert(error.message);
         return;
     }
 
     const finalCustomerDetails = {
-        ...store.getCustomer,
-        cart: JSON.stringify(store.getCartContents),
+        ...cartStore.getCustomer,
+        cart: JSON.stringify(cartStore.getCartContents),
         payment_method_id: paymentMethod.id,
         paymentMethod: JSON.stringify(paymentMethod),
-        delivery_method: deliveryMethod.value,
+        shipping_method: shippingMethod.value.name,
         total_amount: orderTotal.value
     };
 
@@ -508,20 +541,16 @@ const processPayment = async () => {
         .then((response) => {
             if (response.status === 201) {
                 localState.paymentProcessing = false;
-                store.clearCart();
-                store.clearCustomer();
-                store.updateOrder(paymentMethod.id);
+                cartStore.clearCart();
+                cartStore.clearCustomer();
+                cartStore.updateOrder(paymentMethod.id);
                 router.push({ name: 'order.show', params: {id: response.data.data.id }});
             }
         })
         .catch((error) => {
             localState.paymentProcessing = false;
             localState.orderError = error;
-            alert(error);
+            localState.errors = error.response.data.errors
         });
 };
 </script>
-
-<style scoped>
-
-</style>

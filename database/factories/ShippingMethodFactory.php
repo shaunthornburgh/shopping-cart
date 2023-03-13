@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Customer;
-use App\Models\Product;
-use App\Models\Vat;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Customer>
  */
-class SkuFactory extends Factory
+class ShippingMethodFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -21,11 +19,9 @@ class SkuFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Sku name',
-            'product_id' => Product::inRandomOrder()->first()->id,
-            'sku' => Str::random(32),
-            'price' => $this->faker->randomFloat(2, 20, 100),
-            'vat_id' => Vat::RATE_20,
+            'name' => fake()->name(),
+            'price' => fake()->randomFloat(2, 5, 10),
+            'description' => fake()->sentence,
             'stripe_price_id' => Str::random()
         ];
     }

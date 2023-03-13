@@ -73,4 +73,18 @@ class SkuTest extends TestCase
             'quantity' => $quantity
         ]);
     }
+
+    /** @test  */
+    public function it_has_correct_vat_amount()
+    {
+        $sku = Sku::factory()->create();
+
+        $this->assertTrue($sku->getVatAmount(1) == round((($sku->price * $sku->vat->rate) / 100), 2));
+
+        $skuNoVat = Sku::factory()->create([
+            'vat_id' => null
+        ]);
+
+        $this->assertTrue($skuNoVat->getVatAmount(1) == 0);
+    }
 }

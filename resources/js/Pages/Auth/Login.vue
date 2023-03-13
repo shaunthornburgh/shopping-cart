@@ -37,22 +37,46 @@
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email address</label>
                         <div class="mt-1">
-                            <input v-model="formData.email" id="email" name="email" type="email" autocomplete="email" required class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                            <input
+                                v-model="formData.email"
+                                id="email" name="email"
+                                type="email"
+                                autocomplete="email"
+                                required class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                            >
                         </div>
-                        <div class="font-medium text-red-500 text-xs mt-1" v-if="state.errors.email">{{ state.errors.email[0] }}</div>
+                        <div
+                            class="font-medium text-red-500 text-xs mt-1"
+                            v-if="state.errors.email"
+                        >{{ state.errors.email[0] }}</div>
                     </div>
 
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
                         <div class="mt-1">
-                            <input v-model="formData.password" id="password" name="password" type="password" autocomplete="current-password" required class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                            <input
+                                v-model="formData.password"
+                                id="password"
+                                name="password"
+                                type="password"
+                                autocomplete="current-password" required class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                            >
                         </div>
-                        <div class="font-medium text-red-500 text-xs mt-1" v-if="state.errors.password">{{ state.errors.password[0] }}</div>
+                        <div
+                            class="font-medium text-red-500 text-xs mt-1"
+                            v-if="state.errors.password"
+                        >{{ state.errors.password[0] }}</div>
                     </div>
 
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <input v-model="formData.remember_me" id="remember_me" name="remember_me" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <input
+                                v-model="formData.remember_me"
+                                id="remember_me"
+                                name="remember_me"
+                                type="checkbox"
+                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            >
                             <label for="remember_me" class="ml-2 block text-sm text-gray-900">Remember me</label>
                         </div>
 

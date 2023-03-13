@@ -96,7 +96,6 @@ const register = async () => {
             router.push({ name: 'account.profile' })
         })
         .catch(error => {
-            console.log(error);
             state.errors = error.response.data.errors
             state.loading = false;
         })

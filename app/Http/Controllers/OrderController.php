@@ -13,15 +13,12 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
-    private OrderRepositoryInterface $orderRepository;
-
     /**
      * @param OrderRepositoryInterface $orderRepository
      */
-    public function __construct(OrderRepositoryInterface $orderRepository)
-    {
-        $this->orderRepository = $orderRepository;
-    }
+    public function __construct(
+        public OrderRepositoryInterface $orderRepository
+    ) {}
 
     /**
      * Display the specified resource.
@@ -40,7 +37,6 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request): OrderResource|JsonResponse
     {
-        // TODO return to $request->validated()
-        return new OrderResource($this->orderRepository->createOrder($request->toArray()));
+        return new OrderResource($this->orderRepository->createOrder($request->validated()));
     }
 }

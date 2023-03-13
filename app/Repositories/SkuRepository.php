@@ -49,14 +49,16 @@ class SkuRepository implements SkuRepositoryInterface
     public function createSku(array $skuDetails): Sku
     {
         $sku = Sku::create([
-            'sku',
-            'product_id',
-            'vat_id'
+            'sku' => $skuDetails['sku'],
+            'name' => $skuDetails['name'],
+            'product_id' => $skuDetails['product_id'],
+            'price' => $skuDetails['price'],
+            'vat_id' => $skuDetails['vat_id'],
         ]);
 
         // Attach attributes
 
-        // Make name automatically?
+        // Make name automatically
 
         // Create product in stripe
 
@@ -70,6 +72,8 @@ class SkuRepository implements SkuRepositoryInterface
             'recurring' => ['interval' => 'month'],
             'product' => $sku->product->stripe_product_id,
         ]);
+
+        // update sku stripe_price_id
 
         return $sku;
     }

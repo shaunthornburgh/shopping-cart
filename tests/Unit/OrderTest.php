@@ -23,7 +23,7 @@ class OrderTest extends TestCase
     {
         $this->assertTrue(
             Schema::hasColumns('orders', [
-                'id', 'user_id', 'total', 'last_four', 'card_type'
+                'id', 'user_id', 'sub_total', 'last_four', 'card_type', 'shipping_method_id', 'vat_amount', 'shipping_sub_total', 'shipping_vat_amount'
             ])
         );
     }

@@ -14,15 +14,12 @@ use Stripe\StripeClient;
 
 class SkuController extends Controller
 {
-    private SkuRepositoryInterface $skuRepository;
-
     /**
      * @param SkuRepositoryInterface $skuRepository
      */
-    public function __construct(SkuRepositoryInterface $skuRepository)
-    {
-        $this->skuRepository = $skuRepository;
-    }
+    public function __construct(
+        public SkuRepositoryInterface $skuRepository
+    ) {}
 
     /**
      * Display a listing of the resource.

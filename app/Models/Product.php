@@ -20,6 +20,7 @@ class Product extends Model
     public const JUMPERS_MONTHLY_SUBSCRIPTION = 5;
     public const TROUSERS_MONTHLY_SUBSCRIPTION = 6;
     public const ONBOARDING_FEE = 7;
+    public const SHIPPING = 8;
 
     protected $fillable = [
         'category_id',

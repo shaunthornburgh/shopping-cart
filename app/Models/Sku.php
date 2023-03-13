@@ -18,7 +18,8 @@ class Sku extends Model
         'sku',
         'product_id',
         'name',
-        'vat_id'
+        'vat_id',
+        'price'
     ];
 
     protected $hidden = [

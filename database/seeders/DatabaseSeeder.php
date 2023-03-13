@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             SkuSeeder::class,
             PackageSeeder::class,
             VatSeeder::class,
+            ShippingMethodSeeder::class,
         ]);
     }
 }

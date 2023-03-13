@@ -54,7 +54,7 @@
 
                                     <div class="absolute top-0 right-0">
                                         <button
-                                            @click="store.removeProductFromCart(cartItem, 'products')"
+                                            @click="cartStore.removeProductFromCart(cartItem, 'products')"
                                             type="button"
                                             class="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
                                         >
@@ -118,7 +118,7 @@
 
                                     <div class="absolute top-0 right-0">
                                         <button
-                                            @click="store.removeProductFromCart(cartItem, 'packages')"
+                                            @click="cartStore.removeProductFromCart(cartItem, 'packages')"
                                             type="button"
                                             class="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
                                         >
@@ -151,7 +151,7 @@
                 <dl class="mt-6 space-y-4">
                     <div class="flex items-center justify-between">
                         <dt class="text-sm text-gray-600">Subtotal</dt>
-                        <dd class="text-sm font-medium text-gray-900">${{subTotal}}</dd>
+                        <dd class="text-sm font-medium text-gray-900">${{ subTotal }}</dd>
                     </div>
                     <div class="flex items-center justify-between border-t border-gray-200 pt-4">
                         <dt class="flex items-center text-sm text-gray-600">
@@ -163,7 +163,7 @@
                                 </svg>
                             </a>
                         </dt>
-                        <dd class="text-sm font-medium text-gray-900">${{ shipping_estimate }}</dd>
+                        <dd class="text-sm font-medium text-gray-900">${{ shippingEstimate }}</dd>
                     </div>
                     <div class="flex items-center justify-between border-t border-gray-200 pt-4">
                         <dt class="flex text-sm text-gray-600">
@@ -197,52 +197,73 @@
 
 <script setup>
 import {useCartStore} from "../../Store/cart";
-import { computed, watch  } from "vue";
+import {computed, reactive, ref, watch} from "vue";
 import router from "../../Router/index";
+import {useShippingMethodStore} from "../../Store/shippingMethod";
+import {useRoute} from "vue-router";
 
-const store = useCartStore();
+const cartStore = useCartStore();
+const shippingMethodStore = useShippingMethodStore();
+const route = useRoute()
+const order = ref(null)
+
+const localState = reactive({
+    loading: false,
+});
+
+const cartHasNonSubscriptionItems = computed(() => {
+    return cartStore.getCartNonSubscriptionItems;
+});
+
+const shippingMethod = computed(() => {
+    return shippingMethodStore.getShippingMethod;
+});
 
 const cartItemOptions = [1, 2, 3, 4, 5, 6, 7, 8];
 
 const quantity = computed(() => {
     let quantity = 0;
-    if (store.getCartQuantity > 0) {
-        quantity = store.getCartQuantity
+    if (cartStore.getCartQuantity > 0) {
+        quantity = cartStore.getCartQuantity;
     } else {
         quantity = 0;
     }
     return quantity;
-
 });
 
 const cartItems = computed(() => {
-    return store.getCartContents;
+    return cartStore.getCartContents;
 });
 
 const subTotal = computed(() => {
-    return store.getCartTotal;
-
+    return cartStore.getCartTotal;
 });
+
 const vatTotal = computed(() => {
-    return store.getVatTotal;
-
+    const amount = Number(cartStore.getVatTotal) + Number(shippingMethodStore.getVatTotal);
+    return amount.toFixed(2);
 });
 
-const shipping_estimate = computed(() => {
-    return  (5).toFixed(2);
+const shippingEstimate = computed(() => {
+    let estimate = 0;
+
+    if (cartHasNonSubscriptionItems.value.length) {
+        return Number(shippingMethod.value.price).toFixed(2);
+    }
+
+    return estimate;
 });
 
 const orderTotal = computed(() => {
-    return (Number(subTotal.value) + Number(vatTotal.value) + Number(shipping_estimate.value)).toFixed(2);
+    return (Number(subTotal.value) + Number(vatTotal.value) + Number(shippingEstimate.value)).toFixed(2);
 });
-
 
 function checkout() {
     router.push({ name: 'order.create' })
 }
 
 function updateCartItemQuantity(cartItem, type, event) {
-    store.updateCartItemQuantity(cartItem, type, event.target.value);
+    cartStore.updateCartItemQuantity(cartItem, type, event.target.value);
 }
 
 </script>

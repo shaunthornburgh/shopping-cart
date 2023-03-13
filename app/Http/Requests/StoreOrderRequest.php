@@ -21,20 +21,20 @@ class StoreOrderRequest extends FormRequest
      */
     public function rules(): array
     {
-        // TODO FIX THIS!
-
         return [
-//            'address' => 'required',
-//            'cart' => 'required',
-//            'city' => 'required',
-//            'country' => 'required',
-//            'email' => 'required|email',
-//            'firstName' => 'required',
-//            'lastName' => 'required',
-//            'paymentMethod' => 'required',
-//            'payment_method_id' => 'required',
-//            'total_amount' => 'required',
-//            'zipcode' => 'required',
+            'address' => 'required',
+            'cart' => 'required',
+            'city' => 'required',
+            'country' => 'required',
+            'email' => 'required|email',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'paymentMethod' => 'required',
+            'payment_method_id' => 'required',
+            'total_amount' => 'required',
+            'county' => 'required',
+            'postcode' => 'required',
+            'shipping_method' => 'sometimes',
         ];
     }
 }

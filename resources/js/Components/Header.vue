@@ -658,7 +658,6 @@ const logout = async () => {
             router.push({name: 'home'})
         })
         .catch(error => {
-            console.log(error)
         })
 }
 

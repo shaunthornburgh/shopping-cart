@@ -191,18 +191,25 @@
 
 <script setup>
 import {useRoute} from "vue-router";
-import {onMounted, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import axios from "axios";
 
 const route = useRoute()
 const order = ref(null)
 
+const localState = reactive({
+    loading: false,
+});
+
 onMounted(async () => {
+    localState.loading = true
     await axios
         .get(`/api/order/${route.params.id}`)
         .then((response) => {
             order.value = response.data.data
-        })
+        });
+
+    localState.loading = false
 })
 </script>
 

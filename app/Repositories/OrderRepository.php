@@ -4,30 +4,26 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Billing\Cart;
+use App\Billing\CartItem;
 use App\Billing\PaymentGatewayInterface;
 use App\Models\Order;
 use App\Models\Package;
+use App\Models\ShippingMethod;
 use App\Models\Sku;
-use App\Models\User;
-use App\Services\PaymentService;
 use Illuminate\Database\Eloquent\Collection;
 
 class OrderRepository implements OrderRepositoryInterface
 {
-    private PaymentGatewayInterface $paymentGateway;
-
-    public function __construct(PaymentGatewayInterface $paymentGateway)
-    {
-        $this->paymentGateway = $paymentGateway;
-    }
-
-    public function getAllSkus(): Collection
-    {
-        return Sku::all();
-    }
+    /**
+     * @param PaymentGatewayInterface $paymentGateway
+     */
+    public function __construct(
+        public PaymentGatewayInterface $paymentGateway
+    ) {}
 
     /**
-     * @param $skuId
+     * @param $orderId
      */
     public function getOrderById($orderId): Sku
     {
@@ -40,87 +36,63 @@ class OrderRepository implements OrderRepositoryInterface
     public function createOrder(array $orderDetails): Order
     {
         $user = $this->paymentGateway->getUser($orderDetails);
-
-        $cart = json_decode($orderDetails['cart'], true);
+        $cartRequest = json_decode($orderDetails['cart'], true);
         $paymentMethod = json_decode($orderDetails['paymentMethod'], true);
-        $products = $cart['products'];
-        $packages = $cart['packages'];
+        $cartItems = collect();
 
-        $order = Order::create([
-            'user_id' => $user->id,
-            'total' => $orderDetails['total_amount'],
-            'last_four' => $paymentMethod["card"]["last4"],
-            'card_type' => $paymentMethod["card"]["brand"],
-        ]);
-
-        // Products and subscriptions
-        foreach ($products as $product) {
-            $this->processSku(
-                $order,
-                Sku::find($product['id']),
-                $user,
-                $product['quantity'],
-                $orderDetails['payment_method_id']
-            );
+        foreach ($cartRequest['products'] as $cartItem) {
+            $cartItems->push(new CartItem(
+                Sku::where('sku', $cartItem['sku'])->first(),
+                $cartItem['quantity']
+            ));
         }
 
-        // Packages
-        foreach ($packages as $package) {
+        foreach ($cartRequest['packages'] as $package) {
             $packageItem = Package::find($package['id']);
 
             foreach ($packageItem->skus as $sku) {
-                $this->processSku(
-                    $order,
+                $cartItems->push(new CartItem(
                     $sku,
-                    $user,
                     $packageItem->skus()->where('sku_id', $sku->id)->first()->pivot->quantity,
-                    $orderDetails['payment_method_id']
-                );
+                ));
             }
         }
 
-        // Shipping
-        $this->processShipping(
-            $order,
-            $user,
+        $cart = new Cart(
+            $cartItems,
             $orderDetails['payment_method_id'],
-            $orderDetails['delivery_method'] === "Standard" ? 500 : 1600
+            $orderDetails['shipping_method'] ? ShippingMethod::where('name', $orderDetails['shipping_method'])->first() : null
         );
+
+        if ($cart->getHasSubscriptionItems()) {
+            $paymentId = $this->paymentGateway->subscribe($user, $cart);
+        } else {
+            $paymentId = $this->paymentGateway->charge($user, $cart);
+        }
+
+        $order = Order::create([
+            'user_id' => $user->id,
+            'sub_total' => $cart->getSubTotal(),
+            'vat_amount' => $cart->getVatAmount(),
+            'shipping_sub_total' => $cart->getShippingSubTotal(),
+            'shipping_vat_amount' => $cart->getShippingVatAmount(),
+            'last_four' => $paymentMethod["card"]["last4"],
+            'card_type' => $paymentMethod["card"]["brand"],
+            'shipping_method_id' => $cart->getShippingMethod()?->id,
+        ]);
+
+        $cart->getCartItems()->each(function(CartItem $cartItem) use ($order, $paymentId) {
+            $order->addSku(
+                $paymentId,
+                $order,
+                $cartItem->getSku(),
+                $quantity = $cartItem->getQuantity(),
+                $cartItem->getSku()->getVatAmount($quantity),
+                'Success'
+            );
+        });
 
         return $order;
     }
-
-    public function processSku(Order $order, Sku $sku, User $user, int $quantity, string $paymentMethodId): void
-    {
-        if ($sku->is_subscription) {
-            $paymentId = $this->paymentGateway->subscribe($user, $sku, $quantity, $paymentMethodId);
-        } else {
-            $paymentId = $this->paymentGateway->charge(
-                $user,
-                $paymentMethodId,
-                ($sku->price + $sku->getVatAmount($quantity)) * 100
-            );
-        }
-
-        $order->addSku(
-            $paymentId,
-            $order,
-            $sku,
-            $quantity,
-            $sku->getVatAmount($quantity),
-            'Success'
-        );
-    }
-
-    public function processShipping($order, $user, $paymentMethodId, $amount): void
-    {
-        $order->skus()->attach(0, [
-            'payment_id' => $this->paymentGateway->charge($user, $paymentMethodId, $amount),
-            'order_id' => $order->id,
-            'quantity' => 1,
-            'status' => 'Success',
-        ]);
-    }
-
 }
 

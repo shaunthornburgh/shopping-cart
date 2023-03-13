@@ -8,10 +8,14 @@
 import MainLayout from "./Layouts/MainLayout.vue";
 import { onMounted } from 'vue';
 import { useCartStore } from './Store/cart.js';
-const store = useCartStore()
+import {useShippingMethodStore} from "./Store/shippingMethod";
+
+const cartStore = useCartStore()
+const shippingMethodStore = useShippingMethodStore()
 
 onMounted(() => {
-    store.getProducts()
+    cartStore.getProducts()
+    shippingMethodStore.getShippingMethods()
 })
 </script>
 

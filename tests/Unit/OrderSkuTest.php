@@ -23,7 +23,7 @@ class OrderSkuTest extends TestCase
     {
         $this->assertTrue(
             Schema::hasColumns('order_sku', [
-                'id', 'order_id', 'sku_id', 'quantity', 'payment_id', 'status', 'vat_amount'
+                'id', 'order_id', 'sku_id', 'quantity', 'payment_id', 'status', 'vat_amount', 'sub_total'
             ])
         );
     }
@@ -44,7 +44,8 @@ class OrderSkuTest extends TestCase
         $order->skus()->attach($sku, [
             'quantity' => $quantity = $this->faker->numberBetween(1, 10),
             'payment_id' => $paymentId = $this->faker->numberBetween(1, 10),
-            'status' => $status = $this->faker->word
+            'status' => $status = $this->faker->word,
+            'sub_total' => $subTotal = $sku->price * $quantity
         ]);
 
         $this->assertDatabaseHas('order_sku', [
@@ -53,6 +54,7 @@ class OrderSkuTest extends TestCase
             'quantity' => $quantity,
             'payment_id' => $paymentId,
             'status' => $status,
+            'sub_total' => $subTotal
         ]);
     }
 }
